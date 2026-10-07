@@ -97,3 +97,18 @@ class Store:
         if item:
             self.cart.remove(item)
         return True, f"{event.name} removed from your cart."
+
+    # ---------- cart: parking ----------
+    def add_parking(self, event, spots):
+        item = _find(self.parking_cart, event)
+        in_cart = item.spots if item else 0
+        if spots < 1 or in_cart + spots > event.parking_available():
+            return False, f"Not enough parking left for {event.name}."
+        _merge(self.parking_cart, event, spots, "parking")
+        return True, f"{spots} parking spot(s) for {event.name} added to your cart."
+
+    def remove_parking(self, event):
+        item = _find(self.parking_cart, event)
+        if item:
+            self.parking_cart.remove(item)
+        return True, f"Parking for {event.name} removed from your cart."
