@@ -112,6 +112,7 @@ class Store:
         if item:
             self.parking_cart.remove(item)
         return True, f"Parking for {event.name} removed from your cart."
+    
     def checkout(self):
         if not self.cart and not self.parking_cart:
             return False, "Your cart is empty."
@@ -133,3 +134,15 @@ class Store:
         self.parking_cart.clear()
         self.save()
         return True, f"Booking confirmed. You paid {total} SAR."
+
+    def sell_ticket(self, event, amount=1):
+        item = _find(self.my_tickets, event)
+        if item is None or amount > item.tickets:
+            return False, "You do not have that many tickets."
+        item.tickets -= amount
+        event.tickets_available += amount
+        if item.tickets == 0:
+            self.my_tickets.remove(item)
+        self.save()
+        return True, f"Sold {amount} ticket(s). Refund: {amount * event.price} SAR."
+
