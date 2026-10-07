@@ -52,3 +52,21 @@ def _merge(items, event, amount, kind):
         item.tickets += amount
     else:
         item.spots += amount
+class Store:
+    """Holds all state. The UI creates ONE of these and keeps it in st.session_state."""
+
+    def __init__(self):
+        self.events = [
+            Event("Boulevard World", 250, "Riyadh", "8:00 PM", "2026-10-10", tickets_available=100),
+            Event("Comedy Show", 100, "Riyadh", "9:00 PM", "2026-10-15", tickets_available=60),
+            Event("Kingdom Arena Boxing Night", 80, "Riyadh", "7:30 PM", "2026-10-20", tickets_available=80),
+            Event("Winter Wonderland", 200, "Riyadh", "6:00 PM", "2026-10-25", tickets_available=40),
+        ]
+        self.cart = []
+        self.parking_cart = []
+        self.my_tickets = []
+        self.parking_reservations = []
+        self.load()
+
+    def cart_total(self):
+        return sum(i.total_price() for i in self.cart + self.parking_cart)
