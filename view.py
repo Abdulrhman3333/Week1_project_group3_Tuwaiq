@@ -70,3 +70,30 @@ class Store:
 
     def cart_total(self):
         return sum(i.total_price() for i in self.cart + self.parking_cart)
+
+    def add_ticket(self, event):
+        item = _find(self.cart, event)
+        in_cart = item.tickets if item else 0
+        if in_cart + 1 > event.tickets_available:
+            return False, f"No more tickets left for {event.name}."
+        _merge(self.cart, event, 1, "ticket")
+        return True, f"{event.name} added to your cart."
+
+    def change_tickets(self, event, delta):
+        item = _find(self.cart, event)
+        if item is None:
+            return False, "That ticket is not in your cart."
+        new = item.tickets + delta
+        if new <= 0:
+            self.cart.remove(item)
+            return True, f"{event.name} removed from your cart."
+        if new > event.tickets_available:
+            return False, f"Only {event.tickets_available} tickets left for {event.name}."
+        item.tickets = new
+        return True, "Quantity updated."
+
+    def remove_ticket(self, event):
+        item = _find(self.cart, event)
+        if item:
+            self.cart.remove(item)
+        return True, f"{event.name} removed from your cart."
