@@ -112,3 +112,24 @@ class Store:
         if item:
             self.parking_cart.remove(item)
         return True, f"Parking for {event.name} removed from your cart."
+    def checkout(self):
+        if not self.cart and not self.parking_cart:
+            return False, "Your cart is empty."
+        for i in self.cart:
+            if i.tickets > i.event.tickets_available:
+                return False, f"Not enough tickets left for {i.event.name}. Update your cart."
+        for i in self.parking_cart:
+            if i.spots > i.event.parking_available():
+                return False, f"Not enough parking left for {i.event.name}. Update your cart."
+
+        total = self.cart_total()
+        for i in self.cart:
+            i.event.tickets_available -= i.tickets
+            _merge(self.my_tickets, i.event, i.tickets, "ticket")
+        for i in self.parking_cart:
+            i.event.parking_reserved += i.spots
+            _merge(self.parking_reservations, i.event, i.spots, "parking")
+        self.cart.clear()
+        self.parking_cart.clear()
+        self.save()
+        return True, f"Booking confirmed. You paid {total} SAR."
