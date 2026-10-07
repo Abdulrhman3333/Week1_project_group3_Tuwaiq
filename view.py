@@ -20,3 +20,12 @@ class Event:
 
     def parking_available(self):
         return self.parking_capacity - self.parking_reserved
+
+
+class CartItem:
+    def __init__(self, event, tickets=1):
+        self.event = event
+        self.tickets = tickets
+
+    def total_price(self):
+        return self.event.price * self.tickets
