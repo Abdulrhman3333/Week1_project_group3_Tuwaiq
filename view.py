@@ -29,3 +29,26 @@ class CartItem:
 
     def total_price(self):
         return self.event.price * self.tickets
+
+
+class ParkingReservation:
+    def __init__(self, event, spots):
+        self.event = event
+        self.spots = spots
+
+    def total_price(self):
+        return self.spots * PARKING_PRICE
+
+
+def _find(items, event):
+    return next((i for i in items if i.event is event), None)
+
+
+def _merge(items, event, amount, kind):
+    item = _find(items, event)
+    if item is None:
+        items.append(CartItem(event, amount) if kind == "ticket" else ParkingReservation(event, amount))
+    elif kind == "ticket":
+        item.tickets += amount
+    else:
+        item.spots += amount
